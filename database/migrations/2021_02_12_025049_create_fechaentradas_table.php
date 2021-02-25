@@ -15,8 +15,8 @@ class CreateFechaentradasTable extends Migration
     {
         Schema::create('fechaentradas', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('inventario_id');
-            $table->foreign('inventario_id')->references('id')->on('inventarios');
+            $table->unsignedBigInteger('detalleproducto_id');
+            $table->foreign('detalleproducto_id')->references('id')->on('detalleproductos');
             $table->integer('cantidad');
             $table->date('fecha');
             $table->string('numero_factura');

@@ -21,6 +21,7 @@ class CreateDetalleproductosTable extends Migration
             $table->foreign('presentacione_id')->references('id')->on('presentaciones');
             $table->string('codigo');
             $table->double('precio', 14,2);
+            $table->integer('stock');
             $table->timestamps();
         });
     }

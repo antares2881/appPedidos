@@ -36,9 +36,15 @@ Route::get('/municipios', 'MunicipioController@index');
 // Productos
 Route::get('/productos', 'ProductoController@index');
 
+// Producto transferencias
+Route::get('/producto-transferencias/{id}', 'ProductotransferenciaController@show');
+
 // Transferencias
 Route::get('/transferencias', 'TransferenciaController@index');
+Route::get('/numero-transferencia/{id}', 'TransferenciaController@findNumberTransferencia');
 Route::post('/transferencias', 'TransferenciaController@store');
+Route::put('/transferencias/{id}', 'TransferenciaController@update');
+Route::put('/estado-transferencias/{id}', 'TransferenciaController@updateState');
 
 // Users
 Route::get('/usuarios', 'UserController@index');

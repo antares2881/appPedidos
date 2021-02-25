@@ -20,6 +20,7 @@ class CreateProductotransferenciasTable extends Migration
             $table->unsignedBigInteger('transferencia_id');
             $table->foreign('transferencia_id')->references('id')->on('transferencias');
             $table->integer('cantidad');
+            $table->integer('entregados');
             $table->timestamps();
         });
     }

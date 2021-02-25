@@ -24,7 +24,7 @@
                 </div>
                 <div class="col-sm-6" :class="{'col-md-3' : admin, 'col-md-5' : !admin}">
                     <h4>No. transferencia</h4>
-                    <input type="number" class="form-control" v-model="pedido.numero">
+                    <input type="number" class="form-control" v-model="pedido.numero" @keypress.enter="findTransferencia">
                 </div>
                 <div class="col-sm-6" :class="{'col-md-4' : admin, 'col-md-7' : !admin}">
                     <h4>Fecha</h4>
@@ -51,20 +51,31 @@
                                             <thead>
                                                 <tr>
                                                     <th class="text-left">
-                                                        Cantidad
+                                                        Cant.
                                                     </th>
                                                     <th class="text-left">
-                                                        Valor producto
+                                                        Stock
                                                     </th>
                                                     <th class="text-left">
-                                                        Valor total
+                                                        V.unit
+                                                    </th>
+                                                    <th class="text-left">
+                                                        V.total
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td width="30%">
+                                                    <td width="25%">
                                                         <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">
+                                                    </td>
+                                                    <td width="25%">
+                                                        <input 
+                                                            type="number"
+                                                            class="form-control"
+                                                            v-model.number="producto.stock"
+                                                            min="0"
+                                                        >
                                                     </td>
                                                     <td>{{producto.precio | currency}}</td>
                                                     <td>{{calculoTotalProducto | currency}}</td>
@@ -140,9 +151,17 @@
                                 </p>
                                
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6" v-if="!btnEdit">
                                 <v-btn class="success ma-2" dark @click="savePedido">
                                     Guardar pedido
+                                    <v-icon dark right>
+                                        mdi-content-save
+                                    </v-icon>
+                                </v-btn>
+                            </div>
+                            <div class="col-md-6" v-else>
+                                <v-btn class="ma-2" color="deep-orange" dark @click="updatePedido">
+                                    Actualizar pedido
                                     <v-icon dark right>
                                         mdi-content-save
                                     </v-icon>
@@ -155,7 +174,7 @@
             <div class="row">
                 <div class="col-md-12" v-if="respuestaPedido">
                     <v-alert type="success">
-                        I'm a success alert.
+                        El pedido fue agregado con exito!!
                     </v-alert>
                 </div>
                 <div class="col-md-12" v-if="errorPedido">
@@ -178,6 +197,7 @@
         data() {
             return {
                 admin: true,
+                btnEdit: false,
                 clientes: [],
                 errorPedido: false,
                 errores: '',
@@ -195,6 +215,7 @@
                 producto: {id: '', producto: '', precio: 0, total: 0, cantidad: 0},
                 productos: [],
                 respuestaPedido: false,
+                return: false,
                 totalPedido: 0
             }
         },
@@ -240,6 +261,7 @@
                 this.producto.cantidad = 0;
                 this.producto.precio = Math.round((parseInt(item.precio)*0.17) + parseInt(item.precio));
                 this.producto.producto = item.text;
+                this.producto.stock = item.stock;
                 this.producto.id = item.value;
                 this.item = item;
                 
@@ -259,6 +281,49 @@
 
                 this.calculaTotalPedido(); //Calcula nuevamente el total del pedido
             },
+            findTransferencia(){
+                this.pedidos = [];
+                this.totalPedido = 0;
+                // console.log(this.pedido.numero)  
+                axios.get(`/numero-transferencia/${this.pedido.numero}`)  
+                    .then(res => {
+                        // console.log(res.data)
+                        if(res.data.length > 0){
+                        
+                            this.pedido = Object.assign({}, res.data[0]);
+                            
+                            axios.get(`/producto-transferencias/${res.data[0].id}`)
+                                .then(res => {
+                                    console.log(res.data)
+                                    for (let i = 0; i < res.data.length; i++) {
+
+                                        let vUnit = (res.data[i].detalleproductos.precio*0.17) + res.data[i].detalleproductos.precio;
+                                        let vTotal = res.data[i].cantidad * vUnit;
+
+                                        this.pedidos.push({
+                                            id: res.data[i].productos.id,
+                                            cantidad: res.data[i].cantidad,
+                                            producto: res.data[i].productos.producto+' - '+res.data[i].presentaciones.presentacion,
+                                            total: vTotal,
+                                        });
+                                    }
+                                    this.calculaTotalPedido();
+                                    this.btnEdit = true;
+
+                                })      
+                                .catch(err => {
+                                    console.log(err)
+                                })
+                        }else{
+                            this.btnEdit = false;
+                            this.pedido = {};
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                
+            },
             getProductos(){
                 axios.get('/detalleproductos')
                     .then(res => {
@@ -267,7 +332,8 @@
                             this.productos.push({
                                 value: res.data[i].id,
                                 text: res.data[i].productos.producto +' - '+  res.data[i].presentaciones.presentacion,
-                                precio: res.data[i].precio
+                                precio: res.data[i].precio,
+                                stock: res.data[i].stock
                             });                            
                         }
                     })
@@ -311,47 +377,10 @@
                     })
             },
             savePedido(){
-                if(this.pedido.cliente_id === ''){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Debes agregar un cliente para realizar el pedido'
-                    });
-                    return;
-                }
-                if(this.pedido.numero === ''){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Numero de transferencia vacio'
-                    });
-                    return;
-                }
-                if(this.pedido.fecha === ''){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Debes agregar una fecha de pedido'
-                    });
-                    return;
-                }
-                if(this.pedido.cliente_id === ''){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Debes agregar un cliente para realizar el pedido'
-                    });
-                    return;
-                }
                 this.pedido.pedidos = this.pedidos;
-                if(this.pedido.pedidos.length === 0){
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'Debes agregar productos al pedido'
-                    });
-                    return;
-                }
+                this.validar();
+                if(this.return) return;
+                
                 this.pedido.total = this.totalPedido;
                 axios.post('/transferencias', this.pedido)
                     .then(res => {
@@ -369,6 +398,76 @@
                     .catch(err => {
                         console.log(err)
                     })
+            },
+            updatePedido(){
+                this.pedido.pedidos = this.pedidos;
+                this.validar();                
+                if(this.return) return;
+
+                this.pedido.total = this.totalPedido;
+                axios.put(`/transferencias/${this.pedido.id}`, this.pedido)
+                    .then(res => {
+                        if(res.data === 'ok'){
+                            this.respuestaPedido = true;
+                            this.errorPedido = false;
+                            this.pedido = {};
+                            this.pedidos = [];
+                            this.totalPedido = 0;
+                            this.btnEdit = false;
+                        }else{
+                            this.errorPedido = true;
+                            this.errores = res.data;
+                        }
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+                
+            },
+            validar(){
+
+                this.return = false;
+
+                if(this.pedido.cliente_id === ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Debes agregar un cliente para realizar el pedido'
+                    });
+                    this.return = true;
+                }
+                if(this.pedido.numero === ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Numero de transferencia vacio'
+                    });
+                    this.return = true;                    
+                }
+                if(this.pedido.fecha === ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Debes agregar una fecha de pedido'
+                    });
+                    this.return = true;
+                }
+                if(this.pedido.cliente_id === ''){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Debes agregar un cliente para realizar el pedido'
+                    });
+                    this.return = true;
+                }
+                if(this.pedido.pedidos.length === 0){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Debes agregar productos al pedido'
+                    });
+                    this.return = true;
+                }
             }
         },       
         computed: {
