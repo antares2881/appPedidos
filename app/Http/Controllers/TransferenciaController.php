@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-use App\Transferencia;
+use App\Detalleproducto;
 use App\Productotransferencia;
+use App\Transferencia;
 
 class TransferenciaController extends Controller
 {
@@ -68,15 +69,22 @@ class TransferenciaController extends Controller
         $transferencia->save();
 
         for ($i=0; $i < count($request->pedidos); $i++) { 
+
             $producto_transferencia = new Productotransferencia();
             $producto_transferencia->detalleproducto_id = $request->pedidos[$i]['id'];
             $producto_transferencia->transferencia_id = $transferencia->id;
             $producto_transferencia->cantidad = $request->pedidos[$i]['cantidad'];
+            $producto_transferencia->entregados = $request->pedidos[$i]['entregar'];
 
             $producto_transferencia->save();
+
+            $producto = Detalleproducto::find($request->pedidos[$i]['id']);
+            $producto->stock = $request->pedidos[$i]['cantidad'] - $request->pedidos[$i]['entregar'];
+
+            $producto->save();
         }
 
-        return 'ok';
+        return $transferencia;
 
     }
 

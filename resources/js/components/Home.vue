@@ -1,6 +1,7 @@
 <template>
     <v-app>
         <div class="container-fluid  dashboard-content" v-if="loader">
+            
             <div class="row">
                 <div class="offset-5 col-md-6 col-sm-12">
                     <v-progress-circular
@@ -13,7 +14,7 @@
             </div>
         </div>
         <div class="container-fluid  dashboard-content" v-else>            
-                       
+            <printransfer-component ref="imprimir"/>
             <div class="row" >
                 <div class="col-md-5 col-sm-12" v-if="admin">
                     <h4>Cliente: </h4>         
@@ -54,7 +55,7 @@
                                                         Cant.
                                                     </th>
                                                     <th class="text-left">
-                                                        Stock
+                                                        Entregar
                                                     </th>
                                                     <th class="text-left">
                                                         V.unit
@@ -67,14 +68,16 @@
                                             <tbody>
                                                 <tr>
                                                     <td width="25%">
-                                                        <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">
+                                                        <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">              
                                                     </td>
                                                     <td width="25%">
                                                         <input 
                                                             type="number"
                                                             class="form-control"
-                                                            v-model.number="producto.stock"
+                                                            v-model.number="producto.entregar"
                                                             min="0"
+                                                            :max="producto.stock"
+                                                            :readonly="producto.stock === 0 || role === 2?true:false"
                                                         >
                                                     </td>
                                                     <td>{{producto.precio | currency}}</td>
@@ -83,6 +86,9 @@
                                             </tbody>
                                             </template>
                                         </v-simple-table>
+                                        <div class="col-md-12 col-sm-12" v-if="role === 1">
+                                            <p>Disponible en inventario: <span :class="{'text-danger': producto.stock === 0}">{{producto.stock}}</span></p>
+                                        </div>
                                         <div class="col-md-12 col-sm-12">
                                             <v-btn class="ma-2" color="primary" dark @click="agregarProducto"> 
                                                 Agregar Producto
@@ -137,7 +143,7 @@
                                                         </v-btn>
                                                     </td>
                                                     <td>{{item.producto}}</td>
-                                                    <td>{{item.cantidad}}</td>
+                                                    <td>{{item.cantidad}} ({{item.entregar}})</td>
                                                     <td>{{item.total | currency}}</td>
                                                 </tr>
                                             </tbody>
@@ -212,10 +218,11 @@
                 loader: true,
                 pedido: {id: '', cliente_id: '', numero: '', fecha: '', pedidos: [], total: 0},
                 pedidos: [],
-                producto: {id: '', producto: '', precio: 0, total: 0, cantidad: 0},
+                producto: {id: '', producto: '', precio: 0, total: 0, cantidad: 0, stock: 0, entregar: 0},
                 productos: [],
                 respuestaPedido: false,
                 return: false,
+                role: '',
                 totalPedido: 0
             }
         },
@@ -233,10 +240,22 @@
                     })
                     return;
                 }
+
+                if(this.producto.cantidad < this.producto.entregar){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'El numero de productos a entregar no puede ser mayor a la cantidad solicitada',
+                    })
+                    return;
+                }
+
                 this.pedidos.push({
                     id: this.producto.id,
                     cantidad: this.producto.cantidad,
+                    entregar: this.producto.entregar,
                     producto: this.producto.producto,
+                    stock: this.producto.stock,
                     total: this.producto.total,
                 });
                 
@@ -249,6 +268,8 @@
                 this.producto.cantidad = 0;
                 this.producto.precio = 0;
                 this.producto.total = 0;
+                this.producto.stock = 0;
+                this.producto.entregar = 0;
             },
             calculaTotalPedido(){
                 this.totalPedido = 0;
@@ -274,6 +295,8 @@
                 this.producto.id = producto.id;
                 this.producto.producto = producto.producto;
                 this.producto.cantidad = producto.cantidad;
+                this.producto.stock = producto.stock;
+                this.producto.entregar = 0;
                 this.producto.total = producto.total;
                 this.producto.precio = producto.total/producto.cantidad;
 
@@ -345,6 +368,7 @@
                 this.clientes = [];
                 axios.get('/getUser')
                     .then(res => {
+                        this.role = res.data.role_id;
                         if(res.data.role_id === 1){
                             axios.get('/clientes')
                                 .then(res => {
@@ -384,8 +408,10 @@
                 this.pedido.total = this.totalPedido;
                 axios.post('/transferencias', this.pedido)
                     .then(res => {
-                        if(res.data === 'ok'){
-                            this.respuestaPedido = true;
+                        // console.log(res.data)
+                        if(res.data.created_at){
+                            this.$refs.imprimir.showTransferencia(res.data);
+                            // this.respuestaPedido = true;
                             this.errorPedido = false;
                             this.pedido = {};
                             this.pedidos = [];

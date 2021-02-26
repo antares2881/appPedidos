@@ -29,6 +29,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('home-component', require('./components/Home.vue').default);
 Vue.component('login-component', require('./components/Login.vue').default);
 Vue.component('transferencia-component', require('./components/Transferencia.vue').default);
+Vue.component('printransfer-component', require('./components/ImprimirTransferencia.vue').default);
 Vue.component('user-component', require('./components/User.vue').default);
 
 const app = new Vue({
