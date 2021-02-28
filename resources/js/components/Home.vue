@@ -180,7 +180,7 @@
             <div class="row">
                 <div class="col-md-12" v-if="respuestaPedido">
                     <v-alert type="success">
-                        El pedido fue agregado con exito!!
+                        El pedido fue agregado. 
                     </v-alert>
                 </div>
                 <div class="col-md-12" v-if="errorPedido">
@@ -409,9 +409,8 @@
                 axios.post('/transferencias', this.pedido)
                     .then(res => {
                         // console.log(res.data)
-                        if(res.data.created_at){
-                            this.$refs.imprimir.showTransferencia(res.data);
-                            // this.respuestaPedido = true;
+                        if(res.data === 'ok'){
+                            this.respuestaPedido = true;
                             this.errorPedido = false;
                             this.pedido = {};
                             this.pedidos = [];

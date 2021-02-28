@@ -88,3 +88,6 @@ input:focus{
     margin-left: 4px;
 }
 
+/* .v-dialog:not(.v-dialog--fullscreen){
+    max-height: 70% !important;
+} */

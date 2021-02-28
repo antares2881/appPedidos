@@ -79,12 +79,12 @@ class TransferenciaController extends Controller
             $producto_transferencia->save();
 
             $producto = Detalleproducto::find($request->pedidos[$i]['id']);
-            $producto->stock = $request->pedidos[$i]['cantidad'] - $request->pedidos[$i]['entregar'];
+            $producto->stock = $request->pedidos[$i]['stock'] - $request->pedidos[$i]['entregar'];
 
             $producto->save();
         }
 
-        return $transferencia;
+        return 'ok';
 
     }
 

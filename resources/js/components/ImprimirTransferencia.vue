@@ -107,6 +107,7 @@
                                total: vTotal
                            })
                         }
+                        // Swal.hideLoading() 
                         this.dialogTransferencia = true;
                     })
                     .catch(err => {

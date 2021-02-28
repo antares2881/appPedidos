@@ -21,6 +21,12 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// Categorias
+Route::get('/categorias', 'CategoriaController@index');
+
+// Composiciones
+Route::get('/composiciones', 'ComposicioneController@index');
+
 // Clientes
 Route::get('/clientes', 'ClienteController@index');
 Route::put('/clientes/{id}', 'ClienteController@update');
@@ -29,12 +35,20 @@ Route::post('/clientes', 'ClienteController@store');
 
 // Detalle productos
 Route::get('/detalleproductos', 'DetalleproductoController@index');
+Route::get('/productos', 'ProductoController@index');
+
+// Entradas
+Route::get('/entradas', 'InventarioController@entradas');
+Route::get('/stocks', 'InventarioController@stocks');
+Route::post('/nueva-entrada', 'InventarioController@store');
 
 // Municipios
 Route::get('/municipios', 'MunicipioController@index');
 
 // Productos
 Route::get('/productos', 'ProductoController@index');
+Route::post('/productos', 'ProductoController@store');
+Route::put('/productos/{id}', 'ProductoController@update');
 
 // Producto transferencias
 Route::get('/producto-transferencias/{id}', 'ProductotransferenciaController@show');

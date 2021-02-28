@@ -75,7 +75,7 @@
             <div class="nav-left-sidebar sidebar-dark">
                 <div class="menu-list">
                     <nav class="navbar navbar-expand-lg navbar-light">
-                        <a class="d-xl-none d-lg-none" href="#">Dashboard</a>
+                        <a class="d-xl-none d-lg-none" href="#"></a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
@@ -84,18 +84,20 @@
                                 <li class="nav-divider">
                                     Menu
                                 </li>
-                                @if (Auth::user()->role_id == 1)                                    
+                                @if (Auth::user()->role_id == 1)
                                     <li class="nav-item">
-
                                         <a class="nav-link @yield('admin')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#admin" aria-controls="admin"><i class="fas fa-cog"></i>Admin</a>
                                         <div id="admin" class="collapse submenu" style="">
                                             <ul class="nav flex-column">
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="/usuarios">Usuarios </a>
+                                                    <a class="nav-link" href="/clientes">Clientes</a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="/clientes">Clientes</a>
-                                                </li>                                        
+                                                        <a class="nav-link" href="/productos">Productos </a>
+                                                    </li>                                        
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/usuarios">Usuarios </a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </li>
@@ -115,7 +117,22 @@
                                         </ul>
                                     </div>
                                 </li>
-                                
+                                @if (Auth::user()->role_id == 1)
+                                    <li class="nav-item">
+
+                                        <a class="nav-link @yield('inventario')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#inventario" aria-controls="inventario"><i class="fas fa-dolly-flatbed"></i>Inventario</a>
+                                        <div id="inventario" class="collapse submenu" style="">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/entradas">Entradas</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/stocks">Stock</a>
+                                                </li>                                        
+                                            </ul>
+                                        </div>
+                                    </li>
+                                @endif                                
                                 <li class="nav-item ">
                                     <a class="nav-link @yield('pedidos')" href="/home"><i class="fas fa-shopping-cart"></i>Pedidos <span class="badge badge-success">6</span></a>
                                 </li>

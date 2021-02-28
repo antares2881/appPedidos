@@ -1,6 +1,8 @@
 <template>
     <v-app>
         <div class="container-fluid  dashboard-content">  
+            <div class="row">
+            </div>
             <printransfer-component ref="imprimir"/>
             <v-card>
                 <v-card-title>
@@ -145,6 +147,7 @@
             },
             showTransfer(item){
                 // console.log(item)
+                // Swal.showLoading() 
                 this.$refs.imprimir.showTransferencia(item);
             }
             /* showTransferencia(item){
