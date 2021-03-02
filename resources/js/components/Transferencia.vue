@@ -1,68 +1,78 @@
 <template>
     <v-app>
         <div class="container-fluid  dashboard-content">  
-            <div class="row">
+            <div class="row" v-if="loader">
+                <div class="offset-5 col-md-6 col-sm-12">
+                    <v-progress-circular
+                    :size="70"
+                    :width="7"
+                    color="primary"
+                    indeterminate
+                    ></v-progress-circular>
+                </div>
             </div>
-            <printransfer-component ref="imprimir"/>
-            <v-card>
-                <v-card-title>
-                    Transferencias
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="mdi-magnify"
-                        label="Filtar"
-                        single-line
-                        hide-details
-                    ></v-text-field>
-                </v-card-title>
-                <v-data-table
-                :headers="headers"
-                :items="transferencias"
-                :search="search"
-                >
-                    <template v-slot:item.estado="{item}">
-                        <v-chip
-                            :color="getColor(item.estado)"
-                            small
-                            dark
-                        >
-                            {{ (item.estado) }}
-                        </v-chip>
-                    </template>
-                    <template v-slot:item.valor="{item}">                        
-                        {{ item.valor | currency }}
-                    </template>
-                    <template v-slot:item.botones="{item}">
-                        
-                        <v-btn
-                            color="primary"
-                            small
-                            dark
-                            @click="showTransfer(item)"
-                        >
-                            <v-icon
+            <div v-else>
+                <printransfer-component ref="imprimir"/>
+                <v-card>
+                    <v-card-title>
+                        Transferencias
+                        <v-spacer></v-spacer>
+                        <v-text-field
+                            v-model="search"
+                            append-icon="mdi-magnify"
+                            label="Filtar"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                    </v-card-title>
+                    <v-data-table
+                    :headers="headers"
+                    :items="transferencias"
+                    :search="search"
+                    >
+                        <template v-slot:item.estado="{item}">
+                            <v-chip
+                                :color="getColor(item.estado)"
+                                small
                                 dark
                             >
-                                mdi-eye
-                            </v-icon>                              
-                        </v-btn>   
-                        <v-btn
-                            color="red"
-                            dark
-                            small
-                            @click="deleteTransferencia(item.id)"
-                            v-if="item.estado_id === 1"
-                        >
-                            <v-icon
-
+                                {{ (item.estado) }}
+                            </v-chip>
+                        </template>
+                        <template v-slot:item.valor="{item}">                        
+                            {{ item.valor | currency }}
+                        </template>
+                        <template v-slot:item.botones="{item}">
+                            
+                            <v-btn
+                                color="primary"
+                                small
+                                dark
+                                @click="showTransfer(item)"
                             >
-                                mdi-minus-circle
-                            </v-icon>
-                        </v-btn>
-                    </template>
-                </v-data-table>
-            </v-card>
+                                <v-icon
+                                    dark
+                                >
+                                    mdi-eye
+                                </v-icon>                              
+                            </v-btn>   
+                            <v-btn
+                                color="red"
+                                dark
+                                small
+                                @click="deleteTransferencia(item.id)"
+                                v-if="item.estado_id === 1"
+                            >
+                                <v-icon
+
+                                >
+                                    mdi-minus-circle
+                                </v-icon>
+                            </v-btn>
+                        </template>
+                    </v-data-table>
+                </v-card>
+            </div>
         </div>
     </v-app>
 </template>
@@ -80,6 +90,7 @@
                     {text: 'Estado', value: 'estado'},
                     {text: 'Accion', value: 'botones'},
                 ],
+                loader: true,
                 search: '',
                 transferencia: {},
                 transferencias: []
@@ -140,6 +151,7 @@
                                 valor: res.data[i].valor
                             });
                         }
+                        this.loader = false;
                     })
                     .catch(err => {
                         console.log(err)

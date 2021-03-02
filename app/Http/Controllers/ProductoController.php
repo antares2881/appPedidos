@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Composicione;
+use App\Detalleproducto;
 use App\Producto;
 
 class ProductoController extends Controller
@@ -21,6 +22,11 @@ class ProductoController extends Controller
         }else{
             return view('admin.productos.index', compact('productos'));
         }
+    }
+
+    public function show($id){
+        $productos = Detalleproducto::with(['presentaciones', 'productos'])->where('producto_id', $id)->get();
+        return view('admin.productos.show', compact('productos'));
     }
 
     public function store(Request $request){

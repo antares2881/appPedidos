@@ -29,10 +29,13 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 Vue.component('home-component', require('./components/Home.vue').default);
 Vue.component('inventario-component', require('./components/Inventario.vue').default);
 Vue.component('login-component', require('./components/Login.vue').default);
+Vue.component('llamadas-component', require('./components/Llamadas.vue').default);
+Vue.component('modaldetalleproducto-component', require('./components/ModalDetalleProducto.vue').default);
 Vue.component('modalproducto-component', require('./components/ModalProducto.vue').default);
 Vue.component('stock-component', require('./components/Stock.vue').default);
 Vue.component('transferencia-component', require('./components/Transferencia.vue').default);
 Vue.component('printransfer-component', require('./components/ImprimirTransferencia.vue').default);
+Vue.component('detalleproductos-component', require('./components/DetalleProductos.vue').default);
 Vue.component('productos-component', require('./components/Producto.vue').default);
 Vue.component('user-component', require('./components/User.vue').default);
 

@@ -100,8 +100,24 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                    </li>
+                                    </li>                                    
                                 @endif
+
+                                <li class="nav-item">
+                                    <a class="nav-link @yield('facturas')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#facturas" aria-controls="facturas"><i class="fas fa-dollar-sign"></i>Facturas</a>
+                                    <div id="facturas" class="collapse submenu" style="">
+                                        <ul class="nav flex-column">
+                                            @if (Auth::user()->role_id == 1)
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/facturas">Realizar facturas</a>
+                                                </li>
+                                            @endif
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/stocks">Historial facturas</a>
+                                            </li>                                        
+                                        </ul>
+                                    </div>
+                                </li>
 
                                 <li class="nav-item">
 
@@ -112,7 +128,7 @@
                                                 <a class="nav-link" href="/transferencias">Pedidos</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/facturas">Facturas</a>
+                                                <a class="nav-link" href="/facturacion">Facturacion</a>
                                             </li>                                        
                                         </ul>
                                     </div>
@@ -132,10 +148,21 @@
                                             </ul>
                                         </div>
                                     </li>
-                                @endif                                
-                                <li class="nav-item ">
-                                    <a class="nav-link @yield('pedidos')" href="/home"><i class="fas fa-shopping-cart"></i>Pedidos <span class="badge badge-success">6</span></a>
-                                </li>
+                                @endif          
+                                <li class="nav-item">
+
+                                        <a class="nav-link @yield('pedidos')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#pedidos" aria-controls="pedidos"><i class="fas fa-shopping-cart"></i>Pedidos</a>
+                                        <div id="pedidos" class="collapse submenu" style="">
+                                            <ul class="nav flex-column">
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/home">Pedidos Clientes </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/pedidos-calox">Pedidos Calox</a>
+                                                </li>                                        
+                                            </ul>
+                                        </div>
+                                    </li>  
                             </ul>
                         </div>
                     </nav>

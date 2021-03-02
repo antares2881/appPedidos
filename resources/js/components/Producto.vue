@@ -39,6 +39,9 @@
                     :items="products"
                     :search="search"
                     >
+                        <template v-slot:item.producto="{item}">
+                            <a :href="'/productos/'+ item.id">{{item.producto}}</a>
+                        </template>
                         <template v-slot:item.acciones="{item}">
                             <v-btn
                                 color="indigo"

@@ -14,7 +14,7 @@
             <div v-else>
                 <div class="row">
                     <div class="col-md-6">
-                        <h4>No. factura</h4>
+                        <h4>No. pedido</h4>
                         <input type="number" v-model.number="entrada.numero_factura" class="form-control">
                     </div>
                     <div class="col-md-6">

@@ -35,6 +35,8 @@ Route::post('/clientes', 'ClienteController@store');
 
 // Detalle productos
 Route::get('/detalleproductos', 'DetalleproductoController@index');
+Route::post('/detalle-productos', 'DetalleproductoController@store');
+Route::put('/detalle-productos/{id}', 'DetalleproductoController@update');
 Route::get('/productos', 'ProductoController@index');
 
 // Entradas
@@ -45,8 +47,12 @@ Route::post('/nueva-entrada', 'InventarioController@store');
 // Municipios
 Route::get('/municipios', 'MunicipioController@index');
 
+// Presentaciones
+Route::get('/presentaciones', 'PresentacioneController@index');
+
 // Productos
 Route::get('/productos', 'ProductoController@index');
+Route::get('/productos/{id}', 'ProductoController@show');
 Route::post('/productos', 'ProductoController@store');
 Route::put('/productos/{id}', 'ProductoController@update');
 
