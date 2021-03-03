@@ -39,10 +39,12 @@ Route::post('/detalle-productos', 'DetalleproductoController@store');
 Route::put('/detalle-productos/{id}', 'DetalleproductoController@update');
 Route::get('/productos', 'ProductoController@index');
 
-// Entradas
-Route::get('/entradas', 'InventarioController@entradas');
+// Inventario
+Route::get('/pedidos-calox', 'InventarioController@pedidosCalox');
+Route::get('/pedidos-calox/{id}', 'InventarioController@findPedidosCalox');
+Route::put('/pedidos-calox/{id}', 'InventarioController@update');
 Route::get('/stocks', 'InventarioController@stocks');
-Route::post('/nueva-entrada', 'InventarioController@store');
+Route::post('/pedidos-calox', 'InventarioController@store');
 
 // Municipios
 Route::get('/municipios', 'MunicipioController@index');

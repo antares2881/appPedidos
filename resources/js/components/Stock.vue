@@ -40,7 +40,8 @@
             return {
                 headers: [
                     {text: 'Producto', value:'producto'},
-                    {text: 'Stock', value: 'stock'}
+                    {text: 'Codigo', value: 'codigo'},
+                    {text: 'Stock', value: 'stock'},
                 ],
                 loader: true,
                 productos: [],
@@ -59,7 +60,8 @@
                             if (res.data[i].stock > 0) {                                
                                 this.productos.push({
                                     producto: res.data[i].productos.producto +' - '+  res.data[i].presentaciones.presentacion,
-                                    stock: res.data[i].stock
+                                    stock: res.data[i].stock,
+                                    codigo: res.data[i].codigo,
                                 });                            
                             }
                         }

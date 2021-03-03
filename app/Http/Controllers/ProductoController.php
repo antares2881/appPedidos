@@ -25,7 +25,8 @@ class ProductoController extends Controller
     }
 
     public function show($id){
-        $productos = Detalleproducto::with(['presentaciones', 'productos'])->where('producto_id', $id)->get();
+        $productos = Producto::with(['detalle', 'presentaciones'])->find($id);
+        
         return view('admin.productos.show', compact('productos'));
     }
 

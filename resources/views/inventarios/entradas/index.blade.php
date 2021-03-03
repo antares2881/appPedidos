@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('inventario')
+@section('pedidos')
     active
 @endsection
 @section('content')

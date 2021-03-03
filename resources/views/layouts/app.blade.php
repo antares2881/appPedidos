@@ -125,7 +125,7 @@
                                     <div id="historial" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/transferencias">Pedidos</a>
+                                                <a class="nav-link" href="/transferencias">Transferencias</a>
                                             </li>
                                             <li class="nav-item">
                                                 <a class="nav-link" href="/facturacion">Facturacion</a>
@@ -140,10 +140,10 @@
                                         <div id="inventario" class="collapse submenu" style="">
                                             <ul class="nav flex-column">
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="/entradas">Entradas</a>
+                                                    <a class="nav-link" href="#">Listado de pedidos</a>
                                                 </li>
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="/stocks">Stock</a>
+                                                    <a class="nav-link" href="/stocks">Productos en Stock</a>
                                                 </li>                                        
                                             </ul>
                                         </div>

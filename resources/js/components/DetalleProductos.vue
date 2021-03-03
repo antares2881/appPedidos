@@ -92,24 +92,27 @@
                 this.$refs.modalDetalleProducto.editProduct(item);
             },
             nuevoProducto(){
-                this.$refs.modalDetalleProducto.newProduct(this.products[0].producto_id, this.products[0].producto);
+                this.$refs.modalDetalleProducto.newProduct(this.productos.id, this.productos.producto);
             },
             setProductos(){
-                this.productos.map((el) => {
+                console.log(this.productos)
+                for (let i = 0; i < this.productos.detalle.length; i++) {
                     this.products.push({
-                        id: el.id,
-                        codigo: el.codigo,
-                        producto_id: el.producto_id,
-                        producto: el.productos.producto,
-                        presentacione_id: el.presentacione_id,
-                        presentacion: el.presentaciones.presentacion,
-                        precio: el.precio,
-                        stock: el.stock,
+                        id: this.productos.detalle[i].id,
+                        codigo: this.productos.detalle[i].codigo,
+                        producto_id: this.productos.detalle[i].producto_id,
+                        producto: this.productos.producto,
+                        presentacione_id: this.productos.presentaciones[i].id,
+                        presentacion: this.productos.presentaciones[i].presentacion,
+                        precio: this.productos.detalle[i].precio,
+                        stock: this.productos.detalle[i].stock,
                     });
-                });
+                    
+                }
+                
                 this.itemsBreadcrumbs = [
                     {text: 'Regresar', href: '../productos', disabled: false},
-                    {text: this.productos[0].productos.producto, href: 'productos', disabled: true},
+                    {text: this.productos.producto, href: 'productos', disabled: true},
                 ]
                 this.loader = false;
             }

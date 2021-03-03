@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <div class="container-fluid  dashboard-content">            
+        <div class="container-fluid  dashboard-content">
             <div class="row" v-if="loader">
                 <div class="offset-5 col-md-6 col-sm-12">
                     <v-progress-circular
@@ -13,11 +13,20 @@
             </div>
             <div v-else>
                 <div class="row">
-                    <div class="col-md-6">
-                        <h4>No. pedido</h4>
-                        <input type="number" v-model.number="entrada.numero_factura" class="form-control">
+                    <div class="col-md-5">
+                        <h4>Cliente: </h4>
+                        <model-select
+                            :options="clientes"
+                            v-model="entrada.cliente_id"
+                        ></model-select>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
+                        <h4>No. pedido</h4>
+                        <input type="number" v-model.number="entrada.num_pedido"
+                        @keypress.enter="buscarPedido" 
+                        class="form-control">
+                    </div>
+                    <div class="col-md-4">
                         <h4>Fecha de factura</h4>
                         <input type="date" class="form-control" v-model="entrada.fecha">
                     </div>
@@ -109,11 +118,20 @@
                                     <span class="fa-xs text-primary mr-1 legend-title"><i class="fa fa-fw fa-square-full"></i></span><span class="legend-text"> Total Factura</span>
                                     <span class="float-right"><h3>{{ totalFactura | currency }}</h3></span>
                                 </p>
-                                <v-btn class="success ma-2" dark @click="saveEntrada">
-                                    Guardar entrada
+                                <v-btn class="indigo ma-2" dark @click="updatePedido" v-if="btnUpdate">
+                                    Actualizar pedido
                                     <v-icon dark right>
                                         mdi-content-save
                                     </v-icon>
+                                </v-btn>
+                                <v-btn class="success ma-2" dark @click="savePedido" v-else>
+                                    Guardar pedido
+                                    <v-icon dark right>
+                                        mdi-content-save
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn class="secondary ma-2" dark @click="reset">
+                                    Cancelar
                                 </v-btn>
                             </div>
                         </div>
@@ -135,11 +153,13 @@
     </v-app>
 </template>
 <script>
-    import { BasicSelect} from 'vue-search-select';
+    import { BasicSelect, ModelSelect} from 'vue-search-select';
     export default {
         data() {
             return {
-                entrada: {numero_factura: '', fecha: '', entradas: []},
+                btnUpdate: false,
+                clientes: [],
+                entrada: {cliente_id: '', fechaentrada_id: '', num_pedido: '', fecha: '', entradas: [], valor: 0},
                 entradas: [],
                 errorEntrada: [],
                 item: {
@@ -155,6 +175,7 @@
         },
         mounted() {
             this.getProductos()
+            this.getClientes()
         },
         methods: {
             agregarProducto(){
@@ -166,8 +187,9 @@
                     });
                     return;
                 }
-                this.entradas.push({
+                this.entradas.unshift({
                     id: this.producto.id,
+                    fechaentrada_id: this.producto.fechaentrada_id,
                     cantidad: this.producto.cantidad,
                     producto: this.producto.producto,
                     stock: this.producto.stock,
@@ -182,6 +204,33 @@
                 this.producto.precio = 0;
                 this.producto.stock = 0;
             },
+            buscarPedido(){
+
+                this.entradas = [];
+                this.totalFactura = 0;
+                axios.get(`/pedidos-calox/${this.entrada.num_pedido}`)
+                    // this.reset()
+                    .then(res => {
+                        console.log(res.data)
+                        this.entrada = Object.assign({}, res.data[0].ventas);
+                        for (let i = 0; i < res.data.length; i++) {
+                            this.entradas.push({
+                                id: res.data[i].detalleproducto_id,
+                                fechaentrada_id: res.data[i].id,
+                                cantidad: res.data[i].cantidad,
+                                producto: res.data[i].productos.producto + ' - '+res.data[i].presentaciones.presentacion,
+                                stock: res.data[i].detalle.stock - res.data[i].cantidad,
+                                precio: res.data[i].detalle.precio,
+                            })
+                        }
+                        this.calculaTotalFactura();
+                        this.btnUpdate = true;
+                        
+                    })
+                    .catch(err => {
+                        console.log(err)
+                    })
+            },
             calculaTotalFactura(){
 
                 this.totalFactura = 0;
@@ -195,6 +244,7 @@
                 this.item.text = producto.producto;
 
                 this.producto.id = producto.id;
+                this.producto.fechaentrada_id = producto.fechaentrada_id;
                 this.producto.producto = producto.producto;
                 this.producto.cantidad = producto.cantidad;
                 this.producto.stock = producto.stock;
@@ -203,17 +253,20 @@
                 this.entradas.splice(index, 1);
 
                 this.calculaTotalFactura(); //Calcula nuevamente el total del pedido
-            },
-            selectProducto(item){
-                // console.log(option)
-                this.producto.cantidad = 0;                
-                this.producto.producto = item.text;
-                this.producto.precio = item.precio;
-                this.producto.stock = item.stock;
-                this.producto.id = item.value;
-                this.item = item;
-                
-            },
+            },   
+            getClientes(){
+                axios.get('/clientes')
+                    .then(res => {
+                        res.data.map((el) => {
+                            if(el.tipocliente_id === 2){
+                                this.clientes.push({
+                                    text: el.razon_social,
+                                    value: el.id
+                                });
+                            }
+                        })
+                    })
+            },      
             getProductos(){
                 axios.get('/detalleproductos')
                     .then(res => {
@@ -232,10 +285,28 @@
                         console.log(err)
                     })
             },
-            saveEntrada(){
-
+            reset(){
+                this.entrada = {};
+                this.entradas = [];
+                this.totalFactura = 0;
+                this.btnUpdate = false;
+            },
+            selectProducto(item){
+                // console.log(option)
+                this.producto.cantidad = 0;                
+                this.producto.producto = item.text;
+                this.producto.precio = item.precio;
+                this.producto.stock = item.stock;
+                this.producto.id = item.value;
+                this.item = item;
+                
+            },
+            savePedido(){
+                Swal.showLoading()
                 this.entrada.entradas = this.entradas;
-                if (this.entrada.numero_factura === '' || this.entrada.fecha === '' || this.entrada.entradas.length === 0) {
+                this.entrada.valor = this.totalFactura;
+
+                if (this.entrada.num_pedido === '' || this.entrada.fecha === '' || this.entrada.entradas.length === 0) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -244,16 +315,46 @@
                     return;
                 }
 
-                axios.post('/nueva-entrada', this.entrada)
+                axios.post('/pedidos-calox', this.entrada)
                     .then(res => {
-                        if(res.data === 'ok'){
-                            this.entrada = {numero_factura : '', fecha: '', entradas: []};
-                            this.entradas = [];
-                            this.totalFactura = 0;
+                        if(res.data === 'ok'){                           
+                            this.reset();
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Enhorabuena!!',
                                 text: 'Guardado exitoso'
+                            });
+                        }else{
+                            this.mensajeError = true;
+                            this.errorEntrada = res.data;
+                        }
+                    })
+            },
+            updatePedido(){
+                Swal.showLoading()
+                this.entrada.entradas = this.entradas;
+                this.entrada.valor = this.totalFactura;
+                
+                if (this.entrada.num_pedido === '' || this.entrada.fecha === '' || this.entrada.entradas.length === 0) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'Hay campos vacios (Numero de factura) / (Fecha) / (Productos)',
+                    })
+                    return;
+                }
+
+                axios.put(`/pedidos-calox/${this.entrada.id}`, this.entrada)
+                    .then(res => {
+                        if(res.data === 'ok'){
+                           /*  this.entrada = {num_pedido : '', fecha: '', entradas: []};
+                            this.entradas = [];
+                            this.totalFactura = 0; */
+                            this.reset();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Enhorabuena!!',
+                                text: 'Actualizado exitoso'
                             });
                         }else{
                             this.mensajeError = true;
@@ -265,7 +366,8 @@
         computed:{
         },
         components:{
-            BasicSelect
+            BasicSelect,
+            ModelSelect
         }
     }
 </script>
