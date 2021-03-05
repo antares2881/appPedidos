@@ -18,6 +18,7 @@ class CreateFechaentradasTable extends Migration
             $table->unsignedBigInteger('detalleproducto_id');
             $table->foreign('detalleproducto_id')->references('id')->on('detalleproductos');
             $table->integer('cantidad');
+            $table->integer('adicionales');
             $table->double('precio_entrada', 14,2);
             $table->date('fecha');
             $table->string('numero_factura');

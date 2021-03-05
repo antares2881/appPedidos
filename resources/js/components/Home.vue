@@ -1,7 +1,6 @@
 <template>
     <v-app>
-        <div class="container-fluid  dashboard-content" v-if="loader">
-            
+        <div class="container-fluid  dashboard-content" v-if="loader">           
             <div class="row">
                 <div class="offset-5 col-md-6 col-sm-12">
                     <v-progress-circular
@@ -13,8 +12,8 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid  dashboard-content" v-else>            
-            <printransfer-component ref="imprimir"/>
+        <div class="container-fluid  dashboard-content" v-else>
+            <facturas-component ref="facturar" />
             <div class="row" >
                 <div class="col-md-5 col-sm-12" v-if="admin">
                     <h4>Cliente: </h4>         
@@ -165,11 +164,17 @@
                                     </v-icon>
                                 </v-btn>
                             </div>
-                            <div class="col-md-6" v-else>
+                            <div class="col-md-12" v-else>
                                 <v-btn class="ma-2" color="deep-orange" dark @click="updatePedido">
                                     Actualizar pedido
                                     <v-icon dark right>
                                         mdi-content-save
+                                    </v-icon>
+                                </v-btn>
+                                <v-btn class="ma-2" color="indigo" dark @click="facturar">
+                                    Facturar
+                                    <v-icon dark right>
+                                        mdi-currency-usd
                                     </v-icon>
                                 </v-btn>
                             </div>
@@ -256,6 +261,7 @@
                     entregar: this.producto.entregar,
                     producto: this.producto.producto,
                     stock: this.producto.stock,
+                    precio: this.producto.precio,
                     total: this.producto.total,
                 });
                 
@@ -295,7 +301,7 @@
                 this.producto.id = producto.id;
                 this.producto.producto = producto.producto;
                 this.producto.cantidad = producto.cantidad;
-                this.producto.stock = producto.stock;
+                this.producto.stock = producto.stock + producto.entregar;
                 this.producto.entregar = 0;
                 this.producto.total = producto.total;
                 this.producto.precio = producto.total/producto.cantidad;
@@ -304,39 +310,58 @@
 
                 this.calculaTotalPedido(); //Calcula nuevamente el total del pedido
             },
+            facturar(){
+                this.pedido.pedidos = this.pedidos;
+                this.pedido.total = this.totalPedido;
+                this.$refs.facturar.confirmFactura(this.pedido);
+            },
             findTransferencia(){
                 this.pedidos = [];
                 this.totalPedido = 0;
                 // console.log(this.pedido.numero)  
                 axios.get(`/numero-transferencia/${this.pedido.numero}`)  
                     .then(res => {
-                        // console.log(res.data)
+                        
                         if(res.data.length > 0){
                         
                             this.pedido = Object.assign({}, res.data[0]);
+
+                            if(this.pedido.estado_id === 2){
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'El pedido ya fue facturado'
+                                });
+                                return;
+                            }else if(this.pedido.estado_id === 1){
+
+                                axios.get(`/producto-transferencias/${res.data[0].id}`)
+                                    .then(res => {
+                                        // console.log(res.data)
+                                        for (let i = 0; i < res.data.length; i++) {
+    
+                                            let vUnit = Math.round((res.data[i].detalleproductos.precio*0.17) + res.data[i].detalleproductos.precio);
+                                            let vTotal = res.data[i].cantidad * vUnit;
+    
+                                            this.pedidos.push({
+                                                id: res.data[i].productos.id,
+                                                cantidad: res.data[i].cantidad,
+                                                precio: vUnit,
+                                                entregar: res.data[i].entregados,
+                                                stock: res.data[i].detalleproductos.stock,
+                                                producto: res.data[i].productos.producto+' - '+res.data[i].presentaciones.presentacion,
+                                                total: vTotal,
+                                            });
+                                        }
+                                        this.calculaTotalPedido();
+                                        this.btnEdit = true;
+    
+                                    })      
+                                    .catch(err => {
+                                        console.log(err)
+                                    })
+                            }
                             
-                            axios.get(`/producto-transferencias/${res.data[0].id}`)
-                                .then(res => {
-                                    console.log(res.data)
-                                    for (let i = 0; i < res.data.length; i++) {
-
-                                        let vUnit = (res.data[i].detalleproductos.precio*0.17) + res.data[i].detalleproductos.precio;
-                                        let vTotal = res.data[i].cantidad * vUnit;
-
-                                        this.pedidos.push({
-                                            id: res.data[i].productos.id,
-                                            cantidad: res.data[i].cantidad,
-                                            producto: res.data[i].productos.producto+' - '+res.data[i].presentaciones.presentacion,
-                                            total: vTotal,
-                                        });
-                                    }
-                                    this.calculaTotalPedido();
-                                    this.btnEdit = true;
-
-                                })      
-                                .catch(err => {
-                                    console.log(err)
-                                })
+                            
                         }else{
                             this.btnEdit = false;
                             this.pedido = {};
@@ -373,10 +398,12 @@
                             axios.get('/clientes')
                                 .then(res => {
                                     for (let i = 0; i < res.data.length; i++) {
-                                        this.clientes.push({
-                                            value: res.data[i].id,
-                                            text: res.data[i].razon_social+' - '+res.data[i].municipios.mcpio
-                                        });
+                                        if (res.data[i].tipocliente_id === 1) {
+                                            this.clientes.push({
+                                                value: res.data[i].id,
+                                                text: res.data[i].razon_social+' - '+res.data[i].municipios.mcpio
+                                            });                                            
+                                        }
                                     }
                                     this.loader = false;
                                 })

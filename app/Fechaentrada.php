@@ -14,10 +14,10 @@ class Fechaentrada extends Model
         return $this->hasOneThrough(
             Presentacione::class,
             Detalleproducto::class,
-            'id', // Foreign key on the cars table...
-            'id', // Foreign key on the owners table...
-            'detalleproducto_id', // Local key on the mechanics table...
-            'presentacione_id' // Local key on the cars table...
+            'id', 
+            'id', 
+            'detalleproducto_id', 
+            'presentacione_id' 
         ); 
     }
 
@@ -25,10 +25,10 @@ class Fechaentrada extends Model
         return $this->hasOneThrough(
             Producto::class,
             Detalleproducto::class,
-            'id', // Foreign key on the cars table...
-            'id', // Foreign key on the owners table...
-            'detalleproducto_id', // Local key on the mechanics table...
-            'producto_id' // Local key on the cars table...
+            'id', 
+            'id', 
+            'detalleproducto_id', 
+            'producto_id' 
         ); 
     }
 

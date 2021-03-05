@@ -42,11 +42,15 @@
                                             placeholder="Buscar producto"
                                         ></basic-select>                                      
                                     </div>                                    
-                                    <div class="col-md-4 col-sm-12">
-                                        <h3>Cantidad</h3>
+                                    <div class="col-md-3 col-sm-12">
+                                        <h3>Cant.</h3>
                                         <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">   
                                     </div>
-                                    <div class="col-md-8 col-sm-12">
+                                    <div class="col-md-3 col-sm-12">
+                                        <h3>Adc.</h3>
+                                        <input type="number" class="form-control" v-model.number="producto.adicional" min="0">   
+                                    </div>
+                                    <div class="col-md-6 col-sm-12">
                                         <h3>Precio</h3>
                                         <input type="number" class="form-control" v-model.number="producto.precio">   
                                     </div>
@@ -106,7 +110,7 @@
                                                     </v-btn>
                                                 </td>
                                                 <td>{{item.producto}}</td>
-                                                <td>{{item.cantidad}}</td>
+                                                <td>{{item.cantidad}} + {{item.adicional}}</td>
                                                 <td>{{item.precio | currency}}</td>
                                                 <td>{{item.precio * item.cantidad | currency}}</td>
                                             </tr>
@@ -168,7 +172,7 @@
                 },
                 loader: true,
                 mensajeError: false,
-                producto: {id: '', producto: '', precio: 0, cantidad: 0, stock: 0},
+                producto: {id: '', producto: '', fechaentrada_id: 0 , precio: 0, cantidad: 0, adicional: 0, stock: 0},
                 productos: [],
                 totalFactura: 0
             }
@@ -179,7 +183,7 @@
         },
         methods: {
             agregarProducto(){
-                if (this.producto.id === '' || this.producto.cantidad === 0 || this.producto.precio === 0) {
+                if (this.producto.id === '' || this.producto.precio === 0) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Oops...',
@@ -191,6 +195,7 @@
                     id: this.producto.id,
                     fechaentrada_id: this.producto.fechaentrada_id,
                     cantidad: this.producto.cantidad,
+                    adicional: this.producto.adicional,
                     producto: this.producto.producto,
                     stock: this.producto.stock,
                     precio: this.producto.precio,
@@ -199,8 +204,10 @@
                 this.item = {value: '', text: ''}
 
                 this.producto.id = '';
+                this.producto.fechaentrada_id = 0;
                 this.producto.producto = '';
                 this.producto.cantidad = 0;
+                this.producto.adicional = 0;
                 this.producto.precio = 0;
                 this.producto.stock = 0;
             },
@@ -218,8 +225,9 @@
                                 id: res.data[i].detalleproducto_id,
                                 fechaentrada_id: res.data[i].id,
                                 cantidad: res.data[i].cantidad,
+                                adicional: res.data[i].adicionales,
                                 producto: res.data[i].productos.producto + ' - '+res.data[i].presentaciones.presentacion,
-                                stock: res.data[i].detalle.stock - res.data[i].cantidad,
+                                stock: res.data[i].detalle.stock - res.data[i].cantidad - res.data[i].adicionales,
                                 precio: res.data[i].detalle.precio,
                             })
                         }
@@ -247,6 +255,7 @@
                 this.producto.fechaentrada_id = producto.fechaentrada_id;
                 this.producto.producto = producto.producto;
                 this.producto.cantidad = producto.cantidad;
+                this.producto.adicional = producto.adicional;
                 this.producto.stock = producto.stock;
                 this.producto.precio = producto.precio;
 

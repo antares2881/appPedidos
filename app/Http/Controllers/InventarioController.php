@@ -57,6 +57,7 @@ class InventarioController extends Controller
             $entrada->detalleproducto_id = $request->entradas[$i]['id'];
             $entrada->venta_id = $venta->id;
             $entrada->cantidad = $request->entradas[$i]['cantidad'];
+            $entrada->adicionales = $request->entradas[$i]['adicional'];
             $entrada->precio_entrada = $request->entradas[$i]['precio'];
 
             $entrada->save();
@@ -64,7 +65,7 @@ class InventarioController extends Controller
             if($request->cliente_id == 3){
 
                 $detalleproducto = Detalleproducto::find($request->entradas[$i]['id']);
-                $detalleproducto->stock =  $request->entradas[$i]['cantidad'] + $request->entradas[$i]['stock'];
+                $detalleproducto->stock =  $request->entradas[$i]['cantidad'] + $request->entradas[$i]['adicional'] + $request->entradas[$i]['stock'];
                 $detalleproducto->precio = $request->entradas[$i]['precio'];
                 
                 $detalleproducto->save();
@@ -101,12 +102,16 @@ class InventarioController extends Controller
 
         $venta->save();
 
-        for ($i=0; $i < count($request->entradas); $i++) { 
+        // modificar el guardado
 
-            $entrada = Fechaentrada::find($request->entradas[$i]['fechaentrada_id']);
+        $entrada = Fechaentrada::where('venta_id', $id)->delete();
+
+        for ($i=0; $i < count($request->entradas); $i++) {            
+            $entrada = new Fechaentrada();
             $entrada->detalleproducto_id = $request->entradas[$i]['id'];
             $entrada->venta_id = $id;
             $entrada->cantidad = $request->entradas[$i]['cantidad'];
+            $entrada->adicionales = $request->entradas[$i]['adicional'];
             $entrada->precio_entrada = $request->entradas[$i]['precio'];
 
             $entrada->save();
@@ -114,7 +119,7 @@ class InventarioController extends Controller
             if($request->cliente_id == 3){
 
                 $detalleproducto = Detalleproducto::find($request->entradas[$i]['id']);
-                $detalleproducto->stock =  $request->entradas[$i]['cantidad'] + $request->entradas[$i]['stock'];
+                $detalleproducto->stock =  $request->entradas[$i]['cantidad'] + $request->entradas[$i]['adicional'] + $request->entradas[$i]['stock'];
                 $detalleproducto->precio = $request->entradas[$i]['precio'];
                 
                 $detalleproducto->save();

@@ -15,7 +15,7 @@ class DetalleproductoController extends Controller
 
     public function index(Request $request){
         if($request->ajax()){
-            $detalleproductos = Detalleproducto::with(['categorias', 'productos', 'presentaciones'])->get();
+            $detalleproductos = Detalleproducto::with(['categorias', 'productos', 'presentaciones'])->orderBy('stock', 'desc')->get();
             return $detalleproductos;
         }
     }

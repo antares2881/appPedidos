@@ -14,6 +14,10 @@ class Transferencia extends Model
         return $this->belongsTo(Estado::class, 'estado_id');
     }
 
+    public function mayoristas(){
+        return $this->belongsTo(Mayorista::class, 'mayorista_id');
+    }
+
     public function productos(){
         return $this->hasMany(Productotransferencia::class, 'transferencia_id');
     }

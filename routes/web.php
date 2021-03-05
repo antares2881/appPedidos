@@ -21,6 +21,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// Abono pedidos calox
+Route::post('/abono-pedidos', 'AbonopedidoController@store');
+
 // Categorias
 Route::get('/categorias', 'CategoriaController@index');
 
@@ -29,6 +32,7 @@ Route::get('/composiciones', 'ComposicioneController@index');
 
 // Clientes
 Route::get('/clientes', 'ClienteController@index');
+Route::get('/clientes/{id}', 'ClienteController@show');
 Route::put('/clientes/{id}', 'ClienteController@update');
 Route::get('/getCliente', 'ClienteController@getCliente');
 Route::post('/clientes', 'ClienteController@store');
@@ -39,6 +43,9 @@ Route::post('/detalle-productos', 'DetalleproductoController@store');
 Route::put('/detalle-productos/{id}', 'DetalleproductoController@update');
 Route::get('/productos', 'ProductoController@index');
 
+// Facturas
+Route::get('/realizar-facturas', 'FacturaController@index');
+
 // Inventario
 Route::get('/pedidos-calox', 'InventarioController@pedidosCalox');
 Route::get('/pedidos-calox/{id}', 'InventarioController@findPedidosCalox');
@@ -48,6 +55,9 @@ Route::post('/pedidos-calox', 'InventarioController@store');
 
 // Municipios
 Route::get('/municipios', 'MunicipioController@index');
+
+// Pedidos
+Route::get('/listado-calox', 'VentaController@index');
 
 // Presentaciones
 Route::get('/presentaciones', 'PresentacioneController@index');

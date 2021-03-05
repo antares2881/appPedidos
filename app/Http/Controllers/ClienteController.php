@@ -30,6 +30,11 @@ class ClienteController extends Controller
         
     }
 
+    public function show($id){
+        $cliente = Cliente::with(['municipios'])->find($id);
+        return $cliente;
+    }
+
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [

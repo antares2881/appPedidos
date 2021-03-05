@@ -16,13 +16,11 @@ class CreateCobrosTable extends Migration
         Schema::create('cobros', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('cliente_id');
-            $table->foreign('cliente_id')->references('id')->on('clientes');
-            $table->unsignedBigInteger('venta_id');
-            $table->foreign('venta_id')->references('id')->on('ventas');
+            $table->foreign('cliente_id')->references('id')->on('clientes');            
             $table->integer('num_recibo_caja');
             $table->date('fecha');
             $table->double('valor', 14,2);
-            $table->boolean('abono');
+            $table->int('abono');
             $table->string('observacion');
             $table->timestamps();
         });

@@ -33,7 +33,7 @@ class TransferenciaController extends Controller
     }
 
     public function findNumberTransferencia($numero){
-        $transferencia = Transferencia::where('numero', $numero)->get();
+        $transferencia = Transferencia::with(['mayoristas'])->where('numero', $numero)->get();
         return $transferencia;
     }
 
@@ -60,8 +60,9 @@ class TransferenciaController extends Controller
 
         $transferencia = new Transferencia();
         $transferencia->cliente_id = $request->cliente_id;
-        $transferencia->mayorista_id = 1;
+        $transferencia->mayorista_id = 2;
         $transferencia->estado_id = 1;
+        $transferencia->user_id = Auth::user()->id;
         $transferencia->numero = $request->numero;
         $transferencia->fecha = $request->fecha;
         $transferencia->valor = $request->total;
@@ -119,8 +120,14 @@ class TransferenciaController extends Controller
             $producto_transferencia->detalleproducto_id = $request->pedidos[$i]['id'];
             $producto_transferencia->transferencia_id = $request->id;
             $producto_transferencia->cantidad = $request->pedidos[$i]['cantidad'];
+            $producto_transferencia->entregados = $request->pedidos[$i]['entregar'];
 
             $producto_transferencia->save();
+
+            $producto = Detalleproducto::find($request->pedidos[$i]['id']);
+            $producto->stock = $request->pedidos[$i]['stock'] - $request->pedidos[$i]['entregar'];
+
+            $producto->save();
         }
 
         return 'ok';

@@ -109,7 +109,7 @@
                                         <ul class="nav flex-column">
                                             @if (Auth::user()->role_id == 1)
                                                 <li class="nav-item">
-                                                    <a class="nav-link" href="/facturas">Realizar facturas</a>
+                                                    <a class="nav-link" href="/realizar-facturas">Realizar facturas</a>
                                                 </li>
                                             @endif
                                             <li class="nav-item">
@@ -125,11 +125,14 @@
                                     <div id="historial" class="collapse submenu" style="">
                                         <ul class="nav flex-column">
                                             <li class="nav-item">
-                                                <a class="nav-link" href="/transferencias">Transferencias</a>
-                                            </li>
-                                            <li class="nav-item">
                                                 <a class="nav-link" href="/facturacion">Facturacion</a>
                                             </li>                                        
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/listado-calox">Pedidos</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="/transferencias">Transferencias</a>
+                                            </li>
                                         </ul>
                                     </div>
                                 </li>
@@ -139,9 +142,7 @@
                                         <a class="nav-link @yield('inventario')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#inventario" aria-controls="inventario"><i class="fas fa-dolly-flatbed"></i>Inventario</a>
                                         <div id="inventario" class="collapse submenu" style="">
                                             <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="#">Listado de pedidos</a>
-                                                </li>
+                                                
                                                 <li class="nav-item">
                                                     <a class="nav-link" href="/stocks">Productos en Stock</a>
                                                 </li>                                        
