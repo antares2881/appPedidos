@@ -41,7 +41,7 @@ class ClienteController extends Controller
             'user_id' => 'required|unique:clientes',
             'municipio_id' => 'required',
             'tipocliente_id' => 'required',
-            'nit' => 'required|unique:clientes',
+            'nit' => 'required',
             'dv' => 'required',
             'razon_social' => 'required',
             'direccion' => 'required',

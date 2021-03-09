@@ -321,7 +321,9 @@
                 // console.log(this.pedido.numero)  
                 axios.get(`/numero-transferencia/${this.pedido.numero}`)  
                     .then(res => {
-                        
+                        console.log(res.data[0])
+                        this.pedido = {};
+
                         if(res.data.length > 0){
                         
                             this.pedido = Object.assign({}, res.data[0]);
@@ -336,14 +338,14 @@
 
                                 axios.get(`/producto-transferencias/${res.data[0].id}`)
                                     .then(res => {
-                                        // console.log(res.data)
+                                        console.log(res.data)
                                         for (let i = 0; i < res.data.length; i++) {
     
                                             let vUnit = Math.round((res.data[i].detalleproductos.precio*0.17) + res.data[i].detalleproductos.precio);
                                             let vTotal = res.data[i].cantidad * vUnit;
     
                                             this.pedidos.push({
-                                                id: res.data[i].productos.id,
+                                                id: res.data[i].detalleproducto_id,
                                                 cantidad: res.data[i].cantidad,
                                                 precio: vUnit,
                                                 entregar: res.data[i].entregados,

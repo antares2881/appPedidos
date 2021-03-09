@@ -27,6 +27,10 @@ Route::post('/abono-pedidos', 'AbonopedidoController@store');
 // Categorias
 Route::get('/categorias', 'CategoriaController@index');
 
+// Combos
+Route::get('/combos', 'ComboController@index');
+Route::post('/combos', 'ComboController@store');
+
 // Composiciones
 Route::get('/composiciones', 'ComposicioneController@index');
 
@@ -67,6 +71,10 @@ Route::get('/productos', 'ProductoController@index');
 Route::get('/productos/{id}', 'ProductoController@show');
 Route::post('/productos', 'ProductoController@store');
 Route::put('/productos/{id}', 'ProductoController@update');
+
+// Productos-combo
+Route::get('/productos-combo', 'ProductoscomboController@index');
+Route::post('/productos-combo', 'ProductoscomboController@store');
 
 // Producto transferencias
 Route::get('/producto-transferencias/{id}', 'ProductotransferenciaController@show');

@@ -93,8 +93,14 @@
                                                     <a class="nav-link" href="/clientes">Clientes</a>
                                                 </li>
                                                 <li class="nav-item">
-                                                        <a class="nav-link" href="/productos">Productos </a>
-                                                    </li>                                        
+                                                    <a class="nav-link" href="/combos">Combos</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/productos">Productos </a>
+                                                </li> 
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/productos-combo">Productos con combo</a>
+                                                </li>                                        
                                                 <li class="nav-item">
                                                     <a class="nav-link" href="/usuarios">Usuarios </a>
                                                 </li>

@@ -105,7 +105,7 @@ class TransferenciaController extends Controller
         $transferencia = Transferencia::find($id);
 
         $transferencia->cliente_id = $request->cliente_id;
-        $transferencia->mayorista_id = 1;
+        $transferencia->mayorista_id = 2;
         $transferencia->estado_id = 1;
         $transferencia->numero = $request->numero;
         $transferencia->fecha = $request->fecha;

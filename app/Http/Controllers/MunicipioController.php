@@ -8,7 +8,7 @@ use App\Municipio;
 class MunicipioController extends Controller
 {
     public function index(){
-        $municipios = Municipio::all();
+        $municipios = Municipio::with(['departamentos'])->get();
         return $municipios;
     }
 }

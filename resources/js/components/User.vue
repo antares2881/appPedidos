@@ -372,10 +372,11 @@
                 axios.get('/municipios')
                     .then(res => {
                         this.municipios = [];
+                        // console.log(res.data)
                         for (let i = 0; i < res.data.length; i++) {
                             this.municipios.push({
                                 value: res.data[i].id,
-                                text: res.data[i].mcpio
+                                text: res.data[i].mcpio +' - '+res.data[i].departamentos.nombre_dpto
                             });                         
                         }
                     })
@@ -434,6 +435,7 @@
                     this.user = {};
                     this.editarCliente = -1
                     this.editedIndex = -1
+                    this.cliente = {};
                 })
             },
             save(){
