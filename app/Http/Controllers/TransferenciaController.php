@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use App\Detalleproducto;
+use App\Faltantexpedido;
 use App\Productotransferencia;
 use App\Transferencia;
 
@@ -76,6 +77,7 @@ class TransferenciaController extends Controller
             $producto_transferencia->transferencia_id = $transferencia->id;
             $producto_transferencia->cantidad = $request->pedidos[$i]['cantidad'];
             $producto_transferencia->entregados = $request->pedidos[$i]['entregar'];
+            $producto_transferencia->observacion = $request->pedidos[$i]['observacion'];
 
             $producto_transferencia->save();
 
@@ -83,6 +85,16 @@ class TransferenciaController extends Controller
             $producto->stock = $request->pedidos[$i]['stock'] - $request->pedidos[$i]['entregar'];
 
             $producto->save();
+
+            if ($request->pedidos[$i]['cantidad'] > $request->pedidos[$i]['stock']) {
+
+                $faltante = new Faltantexpedido();
+                $faltante->detalleproducto_id = $request->pedidos[$i]['id'];
+                $faltante->transferencia_id = $transferencia->id;
+                $faltante->cantidad = $request->pedidos[$i]['cantidad'] - $request->pedidos[$i]['stock'];
+
+                $faltante->save();
+            }
         }
 
         return 'ok';
@@ -116,18 +128,16 @@ class TransferenciaController extends Controller
         $productos = Productotransferencia::where('transferencia_id', $request->id)->delete();
         
         for ($i=0; $i < count($request->pedidos); $i++) { 
+            
             $producto_transferencia = new Productotransferencia();
             $producto_transferencia->detalleproducto_id = $request->pedidos[$i]['id'];
             $producto_transferencia->transferencia_id = $request->id;
             $producto_transferencia->cantidad = $request->pedidos[$i]['cantidad'];
             $producto_transferencia->entregados = $request->pedidos[$i]['entregar'];
+            $producto_transferencia->observacion = $request->pedidos[$i]['observacion'];
 
             $producto_transferencia->save();
-
-            $producto = Detalleproducto::find($request->pedidos[$i]['id']);
-            $producto->stock = $request->pedidos[$i]['stock'] - $request->pedidos[$i]['entregar'];
-
-            $producto->save();
+            
         }
 
         return 'ok';

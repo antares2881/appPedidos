@@ -17,8 +17,8 @@ class CreateFacturaproductosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('factura_id');
             $table->foreign('factura_id')->references('id')->on('facturas');
-            $table->unsignedBigInteger('producto_id');
-            $table->foreign('producto_id')->references('id')->on('productos');
+            $table->unsignedBigInteger('detalleproducto_id');
+            $table->foreign('detalleproducto_id')->references('id')->on('detalleproductos');
             $table->integer('cantidad');
             $table->timestamps();
         });

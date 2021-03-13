@@ -148,7 +148,9 @@
                                         <a class="nav-link @yield('inventario')" href="#" data-toggle="collapse" aria-expanded="false" data-target="#inventario" aria-controls="inventario"><i class="fas fa-dolly-flatbed"></i>Inventario</a>
                                         <div id="inventario" class="collapse submenu" style="">
                                             <ul class="nav flex-column">
-                                                
+                                                <li class="nav-item">
+                                                    <a class="nav-link" href="/gestion-combos">Gestion de combos</a>
+                                                </li>  
                                                 <li class="nav-item">
                                                     <a class="nav-link" href="/stocks">Productos en Stock</a>
                                                 </li>                                        

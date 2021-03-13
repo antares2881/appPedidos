@@ -31,7 +31,7 @@ class ClienteController extends Controller
     }
 
     public function show($id){
-        $cliente = Cliente::with(['municipios'])->find($id);
+        $cliente = Cliente::with(['departamentos','municipios'])->find($id);
         return $cliente;
     }
 

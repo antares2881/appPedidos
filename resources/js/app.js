@@ -28,6 +28,7 @@ Vue.use(VueCurrencyFilter, {
 Vue.component('combos-component', require('./components/Combos.vue').default);
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('facturas-component', require('./components/Facturas.vue').default);
+Vue.component('gestioncombos-component', require('./components/Gestioncombos.vue').default);
 Vue.component('home-component', require('./components/Home.vue').default);
 Vue.component('inventario-component', require('./components/Inventario.vue').default);
 Vue.component('login-component', require('./components/Login.vue').default);

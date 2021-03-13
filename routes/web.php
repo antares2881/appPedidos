@@ -28,8 +28,13 @@ Route::post('/abono-pedidos', 'AbonopedidoController@store');
 Route::get('/categorias', 'CategoriaController@index');
 
 // Combos
+Route::get('/gestion-combos', 'ComboController@gestionCombos');
 Route::get('/combos', 'ComboController@index');
+Route::get('/combos/{id}', 'ComboController@show');
 Route::post('/combos', 'ComboController@store');
+Route::post('/armar-combo', 'ComboController@armarCombo');
+Route::post('/dividir-combo', 'ComboController@dividirCombo');
+Route::get('/prueba-combos', 'ComboController@prueba');
 
 // Composiciones
 Route::get('/composiciones', 'ComposicioneController@index');
@@ -49,6 +54,7 @@ Route::get('/productos', 'ProductoController@index');
 
 // Facturas
 Route::get('/realizar-facturas', 'FacturaController@index');
+Route::post('/facturas', 'FacturaController@store');
 
 // Inventario
 Route::get('/pedidos-calox', 'InventarioController@pedidosCalox');

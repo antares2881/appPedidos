@@ -43,61 +43,56 @@
                                         @select="calcularPrecio"
                                         placeholder="Buscar producto"
                                     ></basic-select>                                        
+                                </div>                                
+                                <div class="col-md-3">
+                                    <h6>Cantidad</h6>
+                                    <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">
+                                </div>
+                                <div class="col-md-3">
+                                    <h6>Entregar</h6>
+                                    <input 
+                                        type="number"
+                                        class="form-control"
+                                        v-model.number="producto.entregar"
+                                        min="0"
+                                        :max="producto.stock"
+                                        :readonly="producto.stock === 0 || role === 2 || opcionFacturar?true:false"
+                                    >                                        
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Valor unitario</h6>
+                                    <div v-if="precioEditable">
+                                        <input 
+                                            type="number"
+                                            class="form-control"
+                                            v-model="producto.precio"
+                                        >
+                                    </div>
+                                    <div v-else>
+                                        {{producto.precio | currency}}
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12" v-if="role === 1">
+                                        <p>Disponible en inventario: <span :class="{'text-danger': producto.stock === 0}">{{producto.stock}}</span></p>
+                                    </div>
+                                <div class="col-md-12">
+                                    <h6>Observacion</h6>
+                                    <input type="text" v-model="producto.observacion" class="form-control">
                                 </div>
                                 <div class="col-md-12">
-                                    <template>
-                                        <v-simple-table width="100%">
-                                            <template v-slot:default>
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-left">
-                                                        Cant.
-                                                    </th>
-                                                    <th class="text-left">
-                                                        Entregar
-                                                    </th>
-                                                    <th class="text-left">
-                                                        V.unit
-                                                    </th>
-                                                    <th class="text-left">
-                                                        V.total
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td width="25%">
-                                                        <input type="number" class="form-control" v-model.number="producto.cantidad" min="0">              
-                                                    </td>
-                                                    <td width="25%">
-                                                        <input 
-                                                            type="number"
-                                                            class="form-control"
-                                                            v-model.number="producto.entregar"
-                                                            min="0"
-                                                            :max="producto.stock"
-                                                            :readonly="producto.stock === 0 || role === 2?true:false"
-                                                        >
-                                                    </td>
-                                                    <td>{{producto.precio | currency}}</td>
-                                                    <td>{{calculoTotalProducto | currency}}</td>
-                                                </tr>
-                                            </tbody>
-                                            </template>
-                                        </v-simple-table>
-                                        <div class="col-md-12 col-sm-12" v-if="role === 1">
-                                            <p>Disponible en inventario: <span :class="{'text-danger': producto.stock === 0}">{{producto.stock}}</span></p>
-                                        </div>
-                                        <div class="col-md-12 col-sm-12">
-                                            <v-btn class="ma-2" color="primary" dark @click="agregarProducto"> 
-                                                Agregar Producto
-                                                <v-icon dark right>
-                                                    mdi-checkbox-marked-circle
-                                                </v-icon>
-                                            </v-btn>
-                                        </div>
-                                    </template>                        
+                                    <h6>Total</h6>
+                                    {{calculoTotalProducto | currency}}
                                 </div>
+                                <template>  
+                                    <div class="col-md-12 col-sm-12">
+                                        <v-btn class="ma-2" color="primary" dark @click="agregarProducto"> 
+                                            Agregar Producto
+                                            <v-icon dark right>
+                                                mdi-checkbox-marked-circle
+                                            </v-icon>
+                                        </v-btn>
+                                    </div>
+                                </template> 
                             </div>
                         </div>
                     </div>
@@ -221,9 +216,11 @@
                     text: ''
                 },
                 loader: true,
+                opcionFacturar: false,
                 pedido: {id: '', cliente_id: '', numero: '', fecha: '', pedidos: [], total: 0},
                 pedidos: [],
-                producto: {id: '', producto: '', precio: 0, total: 0, cantidad: 0, stock: 0, entregar: 0},
+                producto: {id: '', producto: '', precio: 0, total: 0, cantidad: 0, stock: 0, entregar: 0, observacion: ''},
+                precioEditable: false,
                 productos: [],
                 respuestaPedido: false,
                 return: false,
@@ -263,6 +260,7 @@
                     stock: this.producto.stock,
                     precio: this.producto.precio,
                     total: this.producto.total,
+                    observacion: this.producto.observacion,
                 });
                 
                 this.calculaTotalPedido();
@@ -276,6 +274,7 @@
                 this.producto.total = 0;
                 this.producto.stock = 0;
                 this.producto.entregar = 0;
+                this.producto.observacion = '';
             },
             calculaTotalPedido(){
                 this.totalPedido = 0;
@@ -300,9 +299,15 @@
 
                 this.producto.id = producto.id;
                 this.producto.producto = producto.producto;
+                this.producto.observacion = producto.observacion;
                 this.producto.cantidad = producto.cantidad;
-                this.producto.stock = producto.stock + producto.entregar;
-                this.producto.entregar = 0;
+                if(this.opcionFacturar){
+                    this.producto.stock = producto.stock;
+                    this.producto.entregar = producto.entregar;        
+                }else{
+                    this.producto.stock = producto.stock;
+                    this.producto.entregar = 0;                
+                }
                 this.producto.total = producto.total;
                 this.producto.precio = producto.total/producto.cantidad;
 
@@ -318,27 +323,36 @@
             findTransferencia(){
                 this.pedidos = [];
                 this.totalPedido = 0;
+                this.precioEditable = false;
                 // console.log(this.pedido.numero)  
                 axios.get(`/numero-transferencia/${this.pedido.numero}`)  
                     .then(res => {
-                        console.log(res.data[0])
+                        // console.log(res.data[0])
                         this.pedido = {};
 
                         if(res.data.length > 0){
                         
                             this.pedido = Object.assign({}, res.data[0]);
+                            this.pedido.formapago_id = '';
+                            this.pedido.mediopago_id = '';
+                            this.pedido.numero_factura = '';
+                            this.pedido.fecha_vencimiento = '';
+                            this.pedido.fecha_factura = '';
+                            this.pedido.hora_factura = '';
 
-                            if(this.pedido.estado_id === 2){
+                            /* if(this.pedido.estado_id === 2){
                                 Swal.fire({
                                     icon: 'info',
                                     title: 'El pedido ya fue facturado'
                                 });
                                 return;
-                            }else if(this.pedido.estado_id === 1){
+                            }else if(this.pedido.estado_id === 1){ */
 
                                 axios.get(`/producto-transferencias/${res.data[0].id}`)
                                     .then(res => {
-                                        console.log(res.data)
+                                        // console.log(res.data)
+                                        this.precioEditable = true;
+                                        this.opcionFacturar = true;
                                         for (let i = 0; i < res.data.length; i++) {
     
                                             let vUnit = Math.round((res.data[i].detalleproductos.precio*0.17) + res.data[i].detalleproductos.precio);
@@ -352,6 +366,7 @@
                                                 stock: res.data[i].detalleproductos.stock,
                                                 producto: res.data[i].productos.producto+' - '+res.data[i].presentaciones.presentacion,
                                                 total: vTotal,
+                                                observacion: res.data[i].observacion
                                             });
                                         }
                                         this.calculaTotalPedido();
@@ -361,7 +376,7 @@
                                     .catch(err => {
                                         console.log(err)
                                     })
-                            }
+                            // }
                             
                             
                         }else{
@@ -399,6 +414,7 @@
                         if(res.data.role_id === 1){
                             axios.get('/clientes')
                                 .then(res => {
+                                    // console.log(res.data)
                                     for (let i = 0; i < res.data.length; i++) {
                                         if (res.data[i].tipocliente_id === 1) {
                                             this.clientes.push({
@@ -430,6 +446,7 @@
                     })
             },
             savePedido(){
+                
                 this.pedido.pedidos = this.pedidos;
                 this.validar();
                 if(this.return) return;

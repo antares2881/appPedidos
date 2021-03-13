@@ -7,9 +7,40 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 use App\Combo;
+use App\Detalleproducto;
+use App\Productoscombo;
 
 class ComboController extends Controller
 {
+    public function armarCombo(Request $request){
+
+        $producto = Detalleproducto::find($request->combo);
+        $producto->stock = $request->stockCombo + $request->cantidad;
+        $producto->save();
+
+        for ($i=0; $i < count($request->productos); $i++) { 
+            $detalleproducto = Detalleproducto::find($request->productos[$i]['id']);
+            $detalleproducto->stock = $request->productos[$i]['stock'] - $request->cantidad;
+            $detalleproducto->save();
+        }
+
+        return 'ok';
+    }
+    public function dividirCombo(Request $request){
+
+        $producto = Detalleproducto::find($request->combo);
+        $producto->stock = $request->stockCombo - $request->cantidad;
+        $producto->save();
+
+        for ($i=0; $i < count($request->productos); $i++) { 
+            $detalleproducto = Detalleproducto::find($request->productos[$i]['id']);
+            $detalleproducto->stock = $request->productos[$i]['stock'] + $request->cantidad;
+            $detalleproducto->save();
+        }     
+
+        return 'ok';
+    }
+    
     public function index(Request $request){
         if($request->ajax()){             
             $combos = DB::table('combos AS c')
@@ -27,6 +58,20 @@ class ComboController extends Controller
         }
 
         return view('admin.combos.index');
+    }
+
+    public function gestionCombos(){
+        return view('admin.combos.gestion');
+    }
+
+    public function show($id){
+        return Combo::with(['detalle', 'detalleproductos' ,'productos'])->where('detalleproducto_id', $id)->get();
+    }
+
+    public function prueba(){
+        return Combo::with(['detalleproductos' ,'productos'])->where('detalleproducto_id', 142)->get();
+
+        return $productocombo = Productoscombo::with(['combos' ,'detalleproductos'])->where('detalleproducto_id', 72)->get();
     }
 
     public function store(Request $request){

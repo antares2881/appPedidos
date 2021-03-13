@@ -6,6 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Productoscombo extends Model
 {
+
+    public function combos(){
+        return $this->belongsTo(Combo::class, 'id', 'productoscombo_id');
+    }
+
+    public function detalleproductos(){
+        return $this->hasOne(Detalleproducto::class, 'id', 'detalleproducto_id');
+    }
+
     public function productos(){
         return $this->hasOneThrough(
             Producto::class,
